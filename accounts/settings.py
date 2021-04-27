@@ -114,8 +114,9 @@ USE_L10N = True
 USE_TZ = True
 
 
-# // login redirect
-LOGIN_REDIRECT_URL = '/'
+# Redirects
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
 
 
 # Static files (CSS, JavaScript, Images)
