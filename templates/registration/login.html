@@ -4,11 +4,16 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
+<div class="hero-image" style="background: url('https://images.pexels.com/photos/256643/pexels-photo-256643.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500');">
+    <div class="hero-text" style="line-height:20px;font-size:24px;text-align: center;position: absolute;padding-top: 10%;left: 25%;right:auto;color: rgb(7, 7, 7);">
+
 <h2>Log In</h2>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Log In</button>
+    <button style="border: none;outline: 0;display: inline-block;padding: 10px 25px;color: rgb(255, 255, 255);background-color: rgb(255, 0, 0);text-align: center;cursor: pointer;" type="submit">Log In</button>
 </form>
 
+    </div>
+</div>
 {% endblock %}

@@ -3,11 +3,19 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-{%  if user.is_authenticated %}
-    Hi {{user.username}}!
-    <p><a href="{% url 'logout' %}">Log Out</a></p>
-{% else %}
-    <p>YOU ARE NOT LOGGED IN</p>
-    <a href="{% url 'login' %}">Log In</a>
-{% endif %}
+
+<div class="hero-image" style="background-image: url(https://images.pexels.com/photos/256643/pexels-photo-256643.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500);">
+    <div class="hero-text" style="line-height:30px;font-size:24px;text-align: center;position: absolute;padding-top: 10%;left: 40%;color: rgb(7, 7, 7);">
+        {%  if user.is_authenticated %}
+        Hi {{user.username}}! <br>
+        You are Now one of us <br>
+        <button style="border: none;outline: 0;display: inline-block;padding: 10px 25px;color: rgb(235, 18, 18);background-color: rgb(255, 0, 0);text-align: center;cursor: pointer;"><a style="text-decoration: none;color: white;" href="{% url 'logout' %}">Log Out</a></button>
+        {% else %}
+        <p>YOU ARE NOT LOGGED IN</p>
+       <button style="border: none;outline: 0;display: inline-block;padding: 10px 25px;color: rgb(235, 18, 18);background-color: rgb(255, 0, 0);text-align: center;cursor: pointer;"><a style="text-decoration: none;color: white;" href="{% url 'login' %}">Log In</a></button> 
+        {% endif %}
+    </div>
+</div>
+
+
 {% endblock %}
