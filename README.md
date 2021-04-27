@@ -45,23 +45,81 @@ Instructions for setting up Postgres in CentOs can be found <a href="https://www
 
 ### Clone this repo 
 You can now go ahead and use git to clone this repository  into your environment.
-If you don't have git installed check out <a href="https://www.digitalocean.com/community/tutorials/how-to-install-git-on-centos-8">here</a>
+If you don't have git installed check out <a href="https://www.digitalocean.com/community/tutorials/how-to-install-git-on-centos-8">here</a> <br>
 Check if there is a Venv folder and delete it.
 
 ### Project Environment
-After deleting the venv folder we need a virtual environment and we  can achieve this by running <code>sudo pip install virtualenv</code>
-Activate your environment <code> source yourprojectenv/bin/activate</code>
+After deleting the venv folder we need a virtual environment and we  can achieve this by running <code>sudo pip install virtualenv</code> <br>
+Activate your environment <code> source yourprojectenv/bin/activate </code> <br>
 Install all dependencies in the requirements.txt file using <code>pip install -r requirements.txt </code>
 
 
-### Gunicorn And Nginx
-Now try running the app using <code> python manage.py runserver 0.0.0.0:8000 <code/> 
-Navigate to http://your_environment_Ip_address:8000 and check out your site using a development server.
+### Gunicorn 
+Now try running the app using <code> python manage.py runserver 0.0.0.0:8000 </code> <br>
+Navigate to http://your_environment_Ip_address:8000 and check out your site using a development server.<br>
 
-To move to a production server a combination of gunicorn and Nginx is used (Apache is also a good one but thats for another day).
+To move to a production server a combination of gunicorn and Nginx is used (Apache is also a good one but thats for another day). <br>
+First you need to bind gunicorn to your app using  <br>
+<code>
+cd ~/myproject
+gunicorn --bind 0.0.0.0:8000 myproject.wsgi:application
+</code> <br>
 
+Using and editor of your choice (vim, nano,vi and others ) create a gunicorn config service like this <code>sudo vi /etc/systemd/system/gunicorn.service</code> <br>
+Inside this folder Input the following configurations, remember to replace where apprpriate <br>
+<code>
+[Unit]
+Description=gunicorn daemon
+After=network.target
 
+[Service]
+User=user
+Group=nginx
+WorkingDirectory=/home/user/myproject
+ExecStart=/home/user/myproject/myprojectenv/bin/gunicorn --workers 3 --bind unix:/home/user/myproject/myproject.sock myproject.wsgi:application
 
+[Install]
+WantedBy=multi-user.target
+
+</code> save and exit the file. <br>
+Now you can start and enable gunicorn using these commands <code>
+sudo systemctl start gunicorn
+sudo systemctl enable gunicorn
+</code>
+
+### Nginx
+Modify Nginx configuration file <code>sudo nano /etc/nginx/nginx.conf</code> <br>
+Navigate to where the server code is and above it add a new server block with the following details <br>
+<code>
+server {
+    listen 80;
+    server_name server_domain_or_IP;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /home/user/myproject;
+    }
+
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_pass http://unix:/home/user/myproject/myproject.sock;
+    }
+}
+</code>  Save and close.
+
+CentOs loccks down each user's home directory very restrictively so we need to add the nginx user to our user's group by running <code> sudo usermod -a -G user nginx </code>. <br>
+Now give our user group execute permissions by running <code>chmod 710 /home/user</code>. <br>
+Test your nginx configurations <code> sudo nginx -t</code>. <br>
+If no errors start and enable Nginx 
+<code>
+sudo systemctl start nginx
+sudo systemctl enable nginx
+</code>. <br>
+
+You Should have access to your Django app now by navigationg to your ip address without specifying the port.
 
 ## Authors
 LESKEYLEVY
